@@ -1,12 +1,12 @@
-import { DefaultTheme } from 'react-native-paper'
+import { Platform } from "react-native";
 
-export const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    text: '#000000',
-    primary: '#6c00eb',
-    secondary: '#ebe56d',
-    error: '#f13a59',
+import colors from "./colors";
+
+export default {
+  colors,
+  text: {
+    color: colors.primary,
+    fontSize: 18,
+    fontFamily: Platform.OS === "android" ? "Roboto" : "Avenir",
   },
-}
+};

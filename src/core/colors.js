@@ -1,6 +1,6 @@
 export default{
     primary: '#6c00eb',
-    button: '#ebe56d',
+    secondary: '#8930E8',
     black: "#000",
     white: "#fff",
     medium: "#6e6969",

@@ -1,64 +1,77 @@
 import React from 'react'
-import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 
-import Title from '../components/Title';
 import Screen from '../components/Screen';
-import Icon from '../components/Icon';
 import colors from '../core/colors';
-import FormButton from '../components/form/FormButton';
-import Button from '../components/Button';
+import { Text } from 'react-native-elements';
+import SwipeButton from '@dillionverma/react-native-swipe-button';
 
 export default function SplashScreen({ navigation }) {
     
     return (
-            <Screen>
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <ImageBackground
-                            resizeMode='stretch'
-                            style={styles.image}
-                            source={require('../assets/splash.png')}
-                            />
-                    </View>
-                    
-                    <View style={styles.footer}>
-                        <Title>Réserver n'importe quel transport</Title>
-                        <FormButton 
-                            buttonTitle="Continuer"
-                            onPress={() => navigation.navigate('LoginScreen')} />
-                            
-                    </View>
+        <Screen>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <ImageBackground
+                        resizeMode='stretch'
+                        style={styles.image}
+                        source={require('../assets/splash.png')}
+                        />
                 </View>
-            </Screen>
+                <View style={styles.footer}>
+                    <Text h3 h3Style={styles.text}>Réserver n'importe quel transport</Text>
+                        <SwipeButton 
+                            title='Glisser pour continuer'
+                            height={60}
+                            containerStyle={{
+                                backgroundColor: colors.white,
+                                paddingVertical: 20,
+                                marginTop: 20,
+                                width: '70%'
+                            }}
+                            underlayStyle={{ backgroundColor: colors.primary }}
+                            iconContainerStyle={{
+                                backgroundColor: colors.secondary
+                            }}
+                            titleStyle={{ color: colors.primary }}
+                            onComplete={() => navigation.navigate('Drawer')} />
+                </View>
+            </View>
+        </Screen>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center'
     },
     header: {
-        flex: 1.5,
-        // resizeMode:"cover",
-        justifyContent: 'center',
-        alignItems: 'center'
-        // marginBottom: 20,
-        // borderTopLeftRadius: 30,
+        flex: 2.5,
+        width: '100%',
+        height: '100%',
     },
     footer: {
-        flex: 1,
+        flex: 0.5,
+        width: '100%',
+        height: 150,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
         backgroundColor: colors.primary,
-        fontWeight: 'bold',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingHorizontal: 30,
-        justifyContent: 'center',
+        paddingVertical: 50
     },
     image: {
         width: '100%',
         height: '100%',
     },
-    button: {
-        flexDirection: 'row'
+    text: {
+        fontFamily: 'Roboto',
+        fontWeight: '400',
+        color: colors.white,
     }
 })
