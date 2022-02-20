@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import * as Yup from "yup";
+import * as Location from 'expo-location';
 
 import Screen from '../../components/Screen';
 import Icon from '../../components/Icon';
@@ -9,100 +10,158 @@ import colors from '../../core/colors';
 import {
     Form,
     FormPicker as Picker,
+    FormField,
     SubmitButton,
-  } from "../../components/Forms";
+} from "../../components/Forms";
+import { storeData, getData } from '../../utility/store';
 import Counter from '../../components/Counter';
 
 import metro from '../../assets/json/metro.json';
-import ErrorMessage from '../../components/Forms/ErrorMessage';
+import ActivityIndicator from '../../components/ActivityIndicator';
+// import ErrorMessage from '../../components/Forms/ErrorMessage';
 
-const products = [
-    { label: "Furniture", value: 1 },
-    { label: "Clothing", value: 2 },
-    { label: "Cameras", value: 3 },
-  ];
-
-  const validationSchema = Yup.object().shape({
-    position: Yup.object().required().nullable().label("Position"),
+const validationSchema = Yup.object().shape({
+    // position: Yup.object().required().nullable().label("Position"),
     station: Yup.object().required().nullable().label("Station"),
-  });
+});
 
-export default function ExplorerScreen({navigation}) {
+export default function ExplorerScreen({ navigation }) {
 
-    const [product, setProduct] = useState(products[0]);
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [displayCurrentAddress, setDisplayCurrentAddress] = useState();
 
-    const handleSubmit = () => {
-        navigation.navigate('BuyTicket')
+    let response;
+    let address = '';
+
+    useEffect(() => {
+        (async () => {
+            if (Platform.OS === 'android' && !Constants.isDevice) {
+                setErrorMsg(
+                    'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+                );
+                return;
+            }
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
+
+        })();
+    }, []);
+
+    const handleLocation = async () => {
+        setLoading(true);
+        let { coords } = await Location.getCurrentPositionAsync({});
+        setLoading(false);
+        if (coords) {
+            const { latitude, longitude } = coords;
+            response = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude
+            });
+        }
+        for (let item of response) {
+            if(item.street == null)
+                item.street = '';
+
+            address = `${item.country} ${item.city} ${item.street}`;
+            setDisplayCurrentAddress(address);
+            console.log(displayCurrentAddress)
+        }
+        storeData('data', 'coords');
+        console.log(AsyncStorage.getItem('data'))
     }
-    
+
+    const handleSubmit = (values) => {
+        navigation.navigate('BuyTicket', values)
+    }
+
     return (
-        <Screen style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.choose}>
-                    <View style={styles.chooseIcon}>
-                        <Icon name='subway' color='#16C72E' size={40} />
-                        <Text h4 h4Style={styles.chooseText} >Métro</Text>
-                    </View>
-                    <View style={styles.chooseIcon}>
-                        <Icon name='bus' color='#E8E230' size={40} />
-                        <Text h4 h4Style={styles.chooseText} >Bus</Text>
-                    </View>
-                    <View style={styles.chooseIcon}>
-                        <Icon name='wallet'
-                         color={colors.primary} 
-                         size={40}
-                         onPress={() => navigation.navigate('Historic', { screen: 'Fine' })} />
-                        <Text h4 h4Style={styles.chooseText} >Amende</Text>
+        <>
+            <ActivityIndicator visible={loading} />
+            <Screen style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.choose}>
+                        <View style={styles.chooseIcon}>
+                            <Icon name='subway' color={colors.primary} size={40} />
+                            <Text h4 h4Style={styles.chooseText} >Métro</Text>
+                        </View>
+                        <View style={styles.chooseIcon}>
+                            <Icon
+                                name='bus'
+                                color='#E8E230'
+                                size={40}
+                                onPress={() => navigation.navigate('Bus')} />
+                            <Text h4 h4Style={styles.chooseText} >Bus</Text>
+                        </View>
+                        <View style={styles.chooseIcon}>
+                            <Icon name='wallet'
+                                color={colors.primary}
+                                size={40}
+                                onPress={() => navigation.navigate('Historic', { screen: 'Fine' })} />
+                            <Text h4 h4Style={styles.chooseText} >Amende</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
-            <View style={styles.mask} />
-            <View style={styles.footer}>
-                <View style={{ width: '90%'}}>
-                    <Text h2 h2Style={styles.title}>Where would like to go today?</Text>
-                    <Form
-                        initialValues={{ position: null, station: null }}
-                        onSubmit={handleSubmit}
-                        validationSchema={validationSchema}
+                <View style={styles.mask} />
+                <View style={styles.footer}>
+                    <View style={{ width: '90%' }}>
+                        <Text h2 h2Style={styles.title}>Where would like to go today?</Text>
+                        <Form
+                            initialValues={{ position: null, station: null }}
+                            onSubmit={handleSubmit}
+                            validationSchema={validationSchema}
                         >
-                        <View style={styles.boxContainer}>
-                            <View style={{ width: '10%' }}>
-                                <Image style={{ width: 15, height: 100, resizeMode:'contain' }} source={require('../../assets/explore.png')} />
-                            </View>
-                            <View style={{ width: '90%' }}>
-                                <Picker
-                                    items={products}
-                                    name="position"
-                                    icon='paper-plane'
-                                    placeholder="Position Actuelle"
-                                    visible={false}
-                                    />
-                                <View style={styles.roll}>
-                                    <Image 
-                                        source={require('../../assets/sort_alt.png')}
-                                        containerStyle={styles.rollImage} />
+                            <View style={styles.boxContainer}>
+                                <View style={{ width: '10%' }}>
+                                    <Image style={{ width: 15, height: 100, resizeMode: 'contain' }} source={require('../../assets/explore.png')} />
                                 </View>
-                                <Picker
-                                    items={metro}
-                                    name="station"
-                                    icon="map-marker-alt"
-                                    placeholder="Arrivée"
+                                <View style={{ width: '90%' }}>
+                                    <FormField
+                                        // disabled
+                                        // disabledInputStyle={{ background: "#ddd" }}
+                                        autoCapitalize="none"
+                                        autoCorrect
+                                        leftIcon={
+                                            <Icon
+                                                name='locate-outline'
+                                                type='ionicon'
+                                                size={30}
+                                                onPress={() => { handleLocation() }} />
+                                        }
+                                        name="position"
+                                        value={displayCurrentAddress}
+                                        placeholder="Position Actuelle"
+
                                     />
+                                    <View style={styles.roll}>
+                                        <Image
+                                            source={require('../../assets/sort_alt.png')}
+                                            containerStyle={styles.rollImage} />
+                                    </View>
+                                    <Picker
+                                        items={metro}
+                                        name="station"
+                                        icon="map-marker-alt"
+                                        placeholder="Arrivée"
+                                    />
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.justify}>
-                            <Icon name='user' size={25} color={colors.primary} />
-                            <Text h3 h3Style={styles.countText}>Passager</Text>
-                            <Counter />
-                        </View>
-                        <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                            <SubmitButton title="Recherche" />
-                        </View>
-                        
-                    </Form>
+                            <View style={styles.justify}>
+                                <Icon name='user' size={25} color={colors.primary} />
+                                <Text h3 h3Style={styles.countText}>Passager</Text>
+                                <Counter />
+                            </View>
+                            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                <SubmitButton title="Recherche" />
+                            </View>
+                        </Form>
+                    </View>
                 </View>
-            </View>
-        </Screen>
+            </Screen>
+        </>
     )
 }
 
@@ -112,7 +171,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         justifyContent: 'center'
-      },
+    },
     header: {
         flex: 1,
         backgroundColor: colors.primary,
@@ -189,7 +248,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         zIndex: 20,
     },
-    rollImage:{
+    rollImage: {
         width: 25,
         height: 25,
         resizeMode: 'contain'

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, View, Image,TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image,TouchableOpacity,Platform, KeyboardAvoidingView } from 'react-native';
 import { Text } from 'react-native-elements';
 import * as Yup from "yup";
 
@@ -30,6 +30,10 @@ const LoginScreen = ({navigation}) => {
 
   return (
     <Screen style={styles.container}>
+      <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      >
       <View style={styles.header}>
         <Image
           source={require('../../assets/signin.png')}
@@ -97,7 +101,9 @@ const LoginScreen = ({navigation}) => {
             </TouchableOpacity>  
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Screen>
+    
   );
 };
 
@@ -114,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     width: '100%',
-    height: 200
+    height: 300
   },
   footer:{
     flex: 2,

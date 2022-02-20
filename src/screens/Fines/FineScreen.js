@@ -21,11 +21,11 @@ export default function FineScreen({navigation}) {
                         <Text h4 h4Style={styles.chooseText} >Métro</Text>
                     </View>
                     <View style={styles.chooseIcon}>
-                        <Icon name='bus' color='#E8E230' size={40} />
+                        <Icon name='bus' color='#E8E230' size={40} onPress={() => navigation.navigate('Bus')} />
                         <Text h4 h4Style={styles.chooseText} >Bus</Text>
                     </View>
-                    <View style={styles.chooseIcon}>
-                        <Icon name='wallet' color={colors.primary} size={40} />
+                    <View style={[styles.chooseIcon, {backgroundColor:colors.primary}]}>
+                        <Icon name='wallet' color={colors.white} size={40} />
                         <Text h4 h4Style={styles.chooseText} >Amende</Text>
                     </View>
                 </View>

@@ -9,15 +9,19 @@ import Button from '../components/Button';
 import SocialForm from '../components/Forms/SocialForm';
 import Icon from '../components/Icon';
 import colors from '../core/colors';
+import { getData } from '../utility/store';
 
-export default function TicketScreen({navigation}) {
-    const route = useRoute();
+export default function TicketScreen({navigation, route}) {
+    // const route = useRoute();
+    const { position, station } = route.params;
+        
+        console.log(getData('data'))
     
     return (
         <Screen style={styles.container}>
             <View style={styles.header}>
-            <BackButton goBack={navigation.goBack} />
-            <Text h4 h4Style={{color: colors.white}}>{route.name}</Text>
+                <BackButton goBack={navigation.goBack} />
+                <Text h4 h4Style={{color: colors.white}}>{useRoute().name}</Text>
             </View>
             <View style={styles.mask} />
             <View style={styles.footer}>
@@ -32,9 +36,9 @@ export default function TicketScreen({navigation}) {
                         <View style={styles.row}>
                             <View >
                                 <Text style={styles.textStation}>
-                                    Station <Badge value="1" status="success" />
+                                    Station
                                 </Text>
-                                <Text h4 h4Style={styles.textBody}>PLACE BARCELONE SUD</Text>
+                                <Text h4 h4Style={styles.textBody}>{position}</Text>
                             </View>
                             <View>
                                 <Text style={styles.textStation}>Depart</Text>
@@ -43,8 +47,8 @@ export default function TicketScreen({navigation}) {
                         </View>
                         <View style={styles.row}>
                             <View>
-                                <Text style={styles.textStation}>Station <Badge value="2" status="success" /></Text>
-                                <Text h4 h4Style={styles.textBody}>ABOU EL KACEM ECHEBBI</Text>
+                                <Text style={styles.textStation}>Station <Badge value={station?.ligne} status="success" /></Text>
+                                <Text h4 h4Style={styles.textBody}>{station?.name}</Text>
                             </View>
                             <View>
                                 <Text style={styles.textStation}>Arrivée</Text>

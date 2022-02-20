@@ -20,7 +20,7 @@ const ForgotPasswordScreen = ({navigation}) => {
     <Screen style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/forgot.jpg')}
+          source={require('../../assets/forgot.png')}
           style={styles.image} />
         <BackButton goBack={navigation.goBack} color={colors.black} />
       </View>

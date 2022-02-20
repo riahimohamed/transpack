@@ -10,6 +10,7 @@ import { Form,
   FormField, 
   SubmitButton } from "../../components/Forms";
 import FormImagePicker from "../../components/Forms/FormImagePicker";
+import BackButton from '../../components/BackButton';
 import colors from '../../core/colors';
 import Screen from '../../components/Screen';
 
@@ -20,10 +21,9 @@ const validationSchema = Yup.object().shape({
   tel: Yup.string().required().label("Tel"),
   name: Yup.string().required().label("Name"),
   email: Yup.string().required().email().label("Email"),
-  password: Yup.string().required().min(4).label("Password"),
 });
 
-const RegisterScreen = ({navigation}) => {
+const SubscribeScreen = ({navigation}) => {
 
   const registerApi = useApi(usersApi.register);
   const loginApi = useApi(authApi.login);
@@ -56,19 +56,19 @@ const RegisterScreen = ({navigation}) => {
     <ActivityIndicator visible={registerApi.loading || loginApi.loading} />
     <Screen style={styles.container}>
       <View style={styles.header}>
+      <BackButton goBack={navigation.goBack} color='#000' />
         <Image
-          source={require('../../assets/signup.png')}
+          source={require('../../assets/subscribe.png')}
           style={styles.image} />
       </View>
       
       <View style={styles.footer}>
-        <Text h3 h3Style={{ color: '#4D14D0', textAlign: 'center' }}>Inscription</Text>
+        <Text h3 h3Style={{ color: '#4D14D0', textAlign: 'center' }}>Abonnement</Text>
         <View style={{ justifyContent:'center',  }}>
           <Form
             initialValues={{ tel: "", 
                               name: "", 
-                              email: "", 
-                              password: "", 
+                              email: "",
                               images: [], }}
             onSubmit={handleSubmit}
             validationSchema={validationSchema}
@@ -88,6 +88,21 @@ const RegisterScreen = ({navigation}) => {
               name="name"
               placeholder="Votre Nom & Prénom"
             />
+            {/* <CheckBox
+              title="Elève ou Etudiant"
+              checked={check1}
+              containerStyle={{ width: "100%" }}
+              onPress={() => setCheck1(!check1)}
+            /> */}
+              <FormField
+                autoCapitalize="none"
+                autoCorrect={false}
+                icon="plus-circle"
+                keyboardType="numeric"
+                name="inscri"
+                placeholder="Votre Num d'inscription"
+              />
+              <FormImagePicker name="images" />
             <FormField
               autoCapitalize="none"
               autoCorrect={false}
@@ -97,36 +112,20 @@ const RegisterScreen = ({navigation}) => {
               placeholder="Email"
               textContentType="emailAddress"
             />
-            <FormField
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="lock"
-              name="password"
-              placeholder="Password"
-              secureTextEntry
-              textContentType="password"
-            />
+            
             <View style={{alignItems: 'center', marginVertical: 15}}>
               <SubmitButton style={styles.button} title="Enregistrer" />
             </View>
           </Form>
         </View>
         
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.signup}>
-                vous avez un compte?
-                  <Text style={styles.signupText}> Se connecter</Text>
-              </Text>
-            </TouchableOpacity>  
-        </View>
       </View>
     </Screen>
     </>
   );
 };
 
-export default RegisterScreen;
+export default SubscribeScreen;
 
 const styles = StyleSheet.create({
   container: {
